@@ -1,3 +1,4 @@
+"use client"
 import { useState } from 'react';
 import { ethers } from 'ethers';
 
@@ -36,13 +37,23 @@ export default function ConnectWalletButton() {
     // Simulate a successful verification
     return new Promise<boolean>((resolve) => setTimeout(() => resolve(true), 1000));
   };
+
   return (
-    <div>
-      <button onClick={connectWallet}>
+    <div className="flex space-x-2">
+      <button
+        onClick={connectWallet}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
         {account ? `Connected: ${account}` : 'Connect Wallet'}
       </button>
       {account && (
-        <button onClick={verifyWithWorldID} disabled={isVerified}>
+        <button
+          onClick={verifyWithWorldID}
+          disabled={isVerified}
+          className={`${
+            isVerified ? 'bg-green-500' : 'bg-yellow-500 hover:bg-yellow-700'
+          } text-white font-bold py-2 px-4 rounded`}
+        >
           {isVerified ? 'Verified with WorldID' : 'Verify with WorldID'}
         </button>
       )}
