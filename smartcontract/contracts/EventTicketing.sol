@@ -7,7 +7,7 @@ contract EventTicketing {
         string name;
         string description;
         uint256 date;
-        uint256 maxTickets;
+        uint256 capacity;
         uint256 ticketPrice;
         address[] interestedUsers;
         address[] allocatedUsers;
@@ -19,7 +19,7 @@ contract EventTicketing {
     mapping(address => mapping(uint256 => bool)) public userInterest;
     mapping(address => mapping(uint256 => bool)) public userPayment;
 
-    event EventCreated(uint256 eventId, string name, uint256 date, uint256 maxTickets, uint256 ticketPrice);
+    event EventCreated(uint256 eventId, string name, uint256 date, uint256 capacity, uint256 ticketPrice);
     event RegisteredInterest(uint256 eventId, address user);
     event BallotAllocated(uint256 eventId, address[] allocatedUsers);
     event PaymentMade(uint256 eventId, address user);
@@ -44,11 +44,11 @@ contract EventTicketing {
         string memory name,
         string memory description,
         uint256 date,
-        uint256 maxTickets,
+        uint256 capacity,
         uint256 ticketPrice
     ) public {
         require(date > block.timestamp, "Event date must be in the future");
-        require(maxTickets > 0, "Max tickets must be greater than 0");
+        require(capacity > 0, "Max tickets must be greater than 0");
 
         address[] memory interestedUsers = new address[](0);
         address[] memory allocatedUsers = new address[](0);
@@ -59,14 +59,14 @@ contract EventTicketing {
             name: name,
             description: description,
             date: date,
-            maxTickets: maxTickets,
+            capacity: capacity,
             ticketPrice: ticketPrice,
             interestedUsers: interestedUsers,          
             allocatedUsers: allocatedUsers,
             exists: true
         });
 
-        emit EventCreated(eventCount, name, date, maxTickets, ticketPrice);
+        emit EventCreated(eventCount, name, date, capacity, ticketPrice);
     }
 
     // Register interest in an event
@@ -83,7 +83,7 @@ contract EventTicketing {
         require(currentEvent.date > block.timestamp, "Event already started");
         require(currentEvent.allocatedUsers.length == 0, "Balloting already conducted");
 
-        uint256 numTickets = currentEvent.maxTickets;
+        uint256 numTickets = currentEvent.capacity;
         address[] storage interestedUsers = currentEvent.interestedUsers;
 
         require(interestedUsers.length > 0, "No interested users for this event");
@@ -120,7 +120,7 @@ contract EventTicketing {
         string memory name,
         string memory description,
         uint256 date,
-        uint256 maxTickets,
+        uint256 capacity,
         uint256 ticketPrice,
         address[] memory interestedUsers,
         address[] memory allocatedUsers
@@ -130,7 +130,7 @@ contract EventTicketing {
             currentEvent.name,
             currentEvent.description,
             currentEvent.date,
-            currentEvent.maxTickets,
+            currentEvent.capacity,
             currentEvent.ticketPrice,
             currentEvent.interestedUsers,
             currentEvent.allocatedUsers
