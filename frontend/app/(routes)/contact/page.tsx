@@ -87,12 +87,13 @@ export default function EventOrganizerPage() {
 
             <div>
               <h2 className="text-[40px] md:text-[35px] sm:text-[30px] xxs:text-[28px] font-medium text-etBlack mb-[7px]">
-                Ready to Get Started?
+                Get in Touch with Us
               </h2>
               <p className="text-etGray font-light text-[16px] mb-[38px]">
-                Nullam varius, erat quis iaculis dictum, eros urna varius eros,
-                ut blandit felis odio in turpis. Quisque rhoncus, eros in auctor
-                ultrices,
+                We are here to assist you with any inquiries or support you may
+                need. Please feel free to reach out to us via phone, email, or
+                by filling out the form below. Our team is dedicated to
+                providing you with the best service possible.
               </p>
 
               <form
