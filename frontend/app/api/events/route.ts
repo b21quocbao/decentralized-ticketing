@@ -1,34 +1,20 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-
-export const events = [
-  {
-    id: '1',
-    name: 'Blockchain Conference',
-    description: 'A conference about blockchain technology.',
-    timeMs: 1704067200000, // Example timestamp in milliseconds
-    durationMs: 7200000, // Example duration in milliseconds (2 hours)
-    imageUrl: '/assets/img/event1.jpg',
-  },
-  {
-    id: '2',
-    name: 'Web3 Summit',
-    description: 'Exploring the future of the web.',
-    timeMs: 1705153600000, // Example timestamp in milliseconds
-    durationMs: 10800000, // Example duration in milliseconds (3 hours)
-    imageUrl: '/assets/img/event2.jpg',
-  },
-  {
-    id: '3',
-    name: 'Decentralized Finance Expo',
-    description: 'An expo showcasing the latest in DeFi.',
-    timeMs: 1706240000000, // Example timestamp in milliseconds
-    durationMs: 14400000, // Example duration in milliseconds (4 hours)
-    imageUrl: '/assets/img/event3.jpg',
-  },
-];
+import { neon } from "@neondatabase/serverless";
 
 export async function GET() {
-  return Response.json(events)
+  const sql = neon(process.env.DATABASE_URL as string);
+  const data = await sql`SELECT * FROM events;`;
+  return Response.json(data.map(event => {
+    return {
+      id: event.id,
+      name: event.name,
+      description: event.description,
+      timeMs: Number(event.time_ms),
+      durationMs: Number(event.duration_ms),
+      imageUrl: event.image_url,
+    };
+  }), {
+    status: 200,
+  });
 }
 
 export async function POST(req: Request) {
@@ -42,6 +28,9 @@ export async function POST(req: Request) {
     });
   }
 
+  const sql = neon(process.env.DATABASE_URL as string);
+  const events = await sql`SELECT * FROM events;`;
+
   const newEvent = {
     id: (events.length + 1).toString(), // Generate a new ID
     name,
@@ -51,6 +40,15 @@ export async function POST(req: Request) {
     imageUrl,
   };
 
+  // @ts-ignore
+  await sql.transaction('INSERT INTO events (name, description, time_ms, duration_ms, image_url) VALUES ($1, $2, $3, $4, $5)', [
+    newEvent.name,
+    newEvent.description,
+    newEvent.timeMs,
+    newEvent.durationMs,
+    newEvent.imageUrl,
+  ]);
+
   events.push(newEvent);
-  Response.json(newEvent, { status: 201 });
+  return Response.json(newEvent, { status: 201 });
 }
