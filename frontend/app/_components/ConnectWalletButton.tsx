@@ -135,7 +135,7 @@ export default function Component() {
                     fontSize: "20px",
                   }}
                 >
-                  WorldID
+                  World ID
                 </div>
                 <div
                   style={{
@@ -143,7 +143,7 @@ export default function Component() {
                   }}
                   className="text-etGray"
                 >
-                  Connect with WorldID
+                  Connect with World ID
                 </div>
               </ConnectWorldIDButton>
             </div>
