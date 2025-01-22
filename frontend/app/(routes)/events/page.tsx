@@ -397,7 +397,7 @@ export default function EventOrganizerPage() {
 
                         <div className="flex shrink-0 xxl:flex-col flex-wrap items-center xxl:items-start gap-x-[30px] gap-y-[16px]">
                           <Link
-                            href="/events/1/booking"
+                            href={`/events/${event.id}/booking`}
                             className="et-btn border border-etBlue text-etBlue inline-flex items-center justify-center gap-x-[13px] h-[45px] px-[15px] font-normal text-[17px] rounded-full hover:!bg-etBlue hover:!text-white"
                           >
                             Buy Tickets
