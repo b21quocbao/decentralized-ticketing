@@ -37,10 +37,10 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="et-footer bg-etBlack relative z-[1] before:absolute before:-z-[1] before:inset-0 before:bg-[url('../assets/img/footer-1-bg.jpg')] before:opacity-30 before:mix-blend-overlay text-white">
+      <footer className="et-footer bg-etBlack relative z-[1] before:absolute before:-z-[1] before:inset-0 before:opacity-30 before:mix-blend-overlay text-white">
         <div className="container mx-auto max-w-[calc(100%-37.1vw)] xxxl:max-w-[calc(100%-350px)] xl:max-w-[calc(100%-170px)] px-[12px] lg:max-w-full">
           <div className="et-footer-top pt-[130px] xl:pt-[80px] pb-[60px]">
-            <div className="bg-etBlue py-[35px] px-[40px] xl:px-[30px] rounded-[20px] mb-[60px] overflow-hidden relative z-[1] flex lg:flex-wrap justify-between lg:justify-center xs:justify-start items-center gap-[20px] before:absolute before:-z-[1] before:inset-0 before:bg-[url('../assets/img/contact-info-bg.jpg')] before:bg-cover before:bg-no-repeat before:bg-center before:opacity-40 before:mix-blend-multiply">
+            <div className="bg-etBlue py-[35px] px-[40px] xl:px-[30px] rounded-[20px] mb-[60px] overflow-hidden relative z-[1] flex lg:flex-wrap justify-between lg:justify-center xs:justify-start items-center gap-[20px] before:absolute before:-z-[1] before:inset-0 before:bg-cover before:bg-no-repeat before:bg-center before:opacity-40 before:mix-blend-multiply">
               <div className="flex xxs:flex-col items-center xxs:items-start gap-[15px] xxs:gap-[10px]">
                 <div className="icon border border-white/15 rounded-full w-[63px] aspect-square shrink-0 flex items-center justify-center">
                   <div className="w-[40px] aspect-square bg-white rounded-full flex items-center justify-center">

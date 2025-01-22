@@ -68,7 +68,7 @@ export default function BookingPage() {
             <div className="left">
               <div className="relative rounded-[8px] overflow-hidden">
                 <img
-                  src="/assets/img/event-details-img.jpg"
+                  src={event?.imageUrl}
                   alt="event-details-img"
                 />
                 <span className="absolute top-[20px] left-[20px] bg-etBlue rounded-[6px] text-white px-[12px] py-[5px] inline-block font-normal text-[16px]">
