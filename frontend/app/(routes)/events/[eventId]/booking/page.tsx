@@ -358,7 +358,7 @@ export default function BookingPage() {
                             id="schedule1"
                             name="options"
                             value="schedule1"
-                            className="appearance-none"
+                            className="appearance-none invisible"
                             defaultChecked
                           />
                           <span className="before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
@@ -380,7 +380,7 @@ export default function BookingPage() {
                             id="schedule2"
                             name="options"
                             value="schedule2"
-                            className="appearance-none"
+                            className="appearance-none invisible"
                           />
                           <span className="font-normal text-[14px] text-[#232323] before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
                             30.00 SGD
@@ -401,7 +401,7 @@ export default function BookingPage() {
                             id="schedule3"
                             name="options"
                             value="schedule3"
-                            className="appearance-none"
+                            className="appearance-none invisible"
                           />
                           <span className="font-normal text-[14px] text-[#232323] before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
                             50.00 SGD
