@@ -1,9 +1,73 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState, useCallback } from "react";
+import { ethers, formatEther } from "ethers";
 import ConnectWalletButton from "../_components/ConnectWalletButton";
 import Link from "next/link";
 import ConnectWorldIDButton from "../_components/ConnectWorldIDButton";
 
+const SGDT_ADDRESS = "0x12b408E193dC2b00510C0e36B64ffBd5A34F204F";
+const SGDT_ABI = [
+  // Minimal ABI to get ERC20 Token balance
+  "function balanceOf(address owner) view returns (uint256)",
+];
 const Headbar: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userAddress, setUserAddress] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [sgdtBalance, setSgdtBalance] = useState<string | null>(null);
+
+  const checkLoginStatus = useCallback(() => {
+    const address = localStorage.getItem("address");
+    const role = localStorage.getItem("role");
+    setIsLoggedIn(!!address && !!role);
+    setUserAddress(address);
+    setUserRole(role);
+  }, []);
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, [checkLoginStatus]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!userAddress) return;
+      let signer = null;
+
+      let provider;
+
+      // @ts-ignore
+      if (window.ethereum == null) {
+        console.log("MetaMask not installed; using read-only defaults");
+        provider = ethers.getDefaultProvider();
+      } else {
+        // @ts-ignore
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+      }
+
+      const contract = new ethers.Contract(SGDT_ADDRESS, SGDT_ABI, provider);
+      const balance = await contract.balanceOf(userAddress);
+      setSgdtBalance(formatEther(balance));
+    };
+
+    if (isLoggedIn) {
+      fetchBalance();
+    }
+  }, [isLoggedIn, userAddress]);
+  const handleLogout = () => {
+    localStorage.removeItem("address");
+    localStorage.removeItem("role");
+    setIsLoggedIn(false);
+    setUserAddress(null);
+    setUserRole(null);
+    setSgdtBalance(null);
+  };
+
+  const formatAddress = (address: string | null) => {
+    if (!address) return "";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
   return (
     <>
       <div className="et-overlay group">
@@ -66,30 +130,45 @@ const Headbar: React.FC = () => {
                 </li>
               </ul>
 
-              <button className="px-5 bg-white flex items-center justify-center gap-x-[15px] h-[50px] px-[25px] font-medium text-[17px] rounded-full group">
-                <ul className="et-header-nav flex md:flex-col gap-x-[43px] xl:gap-x-[33px] font-kanit text-[17px] font-normal">
-                  <li className="has-sub-menu relative">
-                    <Link
-                      href="#"
-                      role="button"
-                      style={{
-                        color: "rgb(18, 96, 254)",
-                      }}
-                    >
-                      Login
-                    </Link>
+              <div className="grid grid-cols-2 gap-4 items-center">
+                {isLoggedIn && (
+                  <div className="text-xl text-white">
+                    <p>
+                      Logged in as {userRole}: {formatAddress(userAddress)}
+                    </p>
+                    <p>SGDT Balance: {sgdtBalance}</p>
+                  </div>
+                )}
 
-                    <ul className="et-header-submenu">
-                      <li>
-                        <ConnectWorldIDButton />
-                      </li>
-                      <li>
-                        <ConnectWalletButton />
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </button>
+                <button className="px-5 bg-white flex items-center justify-center gap-x-[15px] h-[50px] px-[25px] font-medium text-[17px] rounded-full group">
+                  <ul className="et-header-nav flex md:flex-col gap-x-[43px] xl:gap-x-[33px] font-kanit text-[17px] font-normal">
+                    <li className="has-sub-menu relative">
+                      <Link
+                        href="#"
+                        role="button"
+                        onClick={isLoggedIn ? handleLogout : undefined}
+                        style={{
+                          color: isLoggedIn ? "red" : "rgb(18, 96, 254)",
+                        }}
+                      >
+                        {isLoggedIn ? "Logout" : "Login"}
+                      </Link>
+                      {!isLoggedIn && (
+                        <ul className="et-header-submenu">
+                          <li>
+                            <ConnectWorldIDButton
+                              onConnect={checkLoginStatus}
+                            />
+                          </li>
+                          <li>
+                            <ConnectWalletButton onConnect={checkLoginStatus} />
+                          </li>
+                        </ul>
+                      )}
+                    </li>
+                  </ul>
+                </button>
+              </div>
             </div>
 
             <button

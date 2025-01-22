@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import ConnectWorldIDButton from "./ConnectWorldIDButton";
 
-export default function Component() {
+export default function Component({ onConnect }: { onConnect?: () => void }) {
   const [openModal, setOpenModal] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
 
@@ -19,6 +19,9 @@ export default function Component() {
           method: "eth_requestAccounts",
         });
         setAccount(accounts[0]);
+        localStorage.setItem("role", "user");
+        localStorage.setItem("address", accounts[0]);
+        if (onConnect) onConnect();
       } catch (error) {
         console.error("Failed to connect wallet:", error);
       }

@@ -3,8 +3,53 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Event } from "../../page";
+import { ethers, parseEther } from "ethers";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
+const CONTRACT_ADDRESS = "0x4d48aFf599E0fe92293F2a80811526fBD98A5c44";
+const CONTRACT_ABI = [
+  {
+    inputs: [
+      { internalType: "uint256", name: "eventId", type: "uint256" },
+      { internalType: "uint256", name: "quantity", type: "uint256" },
+      { internalType: "uint256", name: "price", type: "uint256" },
+    ],
+    name: "bookTicket",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
+
+const SGDT_ADDRESS = "0x12b408E193dC2b00510C0e36B64ffBd5A34F204F";
+const SGDT_ABI = [
+  // Minimal ABI to get ERC20 Token balance
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "spender",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "approve",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 
 export default function BookingPage() {
   const { eventId } = useParams() as any;
@@ -14,15 +59,63 @@ export default function BookingPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(20);
+  const [waitTime, setWaitTime] = useState(13);
 
   const selectSeat = (seat: string) => {
     setSelectedSeats((prev) => [...prev, seat]);
   };
 
+  const handleBuyNow = async () => {
+    // @ts-ignore
+    if (typeof window.ethereum !== "undefined") {
+      let signer = null;
+
+      let provider;
+
+      // @ts-ignore
+      if (window.ethereum == null) {
+        console.log("MetaMask not installed; using read-only defaults");
+        provider = ethers.getDefaultProvider();
+      } else {
+        // @ts-ignore
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+      }
+
+      const sgdtContract = new ethers.Contract(
+        SGDT_ADDRESS,
+        SGDT_ABI,
+        signer
+      );
+
+      const contract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        CONTRACT_ABI,
+        signer
+      );
+
+      try {
+        console.log(price * quantity, parseEther((price * quantity).toString()))
+        const approveTx = await sgdtContract.approve(CONTRACT_ADDRESS, parseEther((price * quantity).toString()));
+        await approveTx.wait();
+        console.log("Approve transaction successful:", approveTx);
+        const tx = await contract.bookTicket(eventId, quantity, parseEther(price.toString()));
+        await tx.wait();
+        console.log("Transaction successful:", tx);
+      } catch (error) {
+        console.error("Transaction failed:", error);
+      }
+    } else {
+      console.error("Ethereum object not found, install MetaMask.");
+    }
+  };
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch("/api/events/" + eventId, { cache: 'no-store' });
+        const response = await fetch("/api/events/" + eventId, {
+          cache: "no-store",
+        });
         const data = await response.json();
         setEvent(data);
       } catch (error) {
@@ -33,17 +126,14 @@ export default function BookingPage() {
     fetchEvent();
   }, [eventId]);
 
-  const handleBooking = () => {
-    if (selectedSeats.length > 5) {
-      // Example condition for balloting
-      setShowBallotWarning(true);
-    } else {
-      // Proceed with booking
-      console.log("Booking confirmed for seats:", selectedSeats);
-    }
-  };
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setWaitTime((prev) => prev - 1);
+    }, 1000);
 
-  const totalAmount = selectedSeats.length * seatPrice;
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <>
       <section className="et-breadcrumb bg-[#000D83] pt-[210px] lg:pt-[190px] sm:pt-[160px] pb-[130px] lg:pb-[110px] sm:pb-[80px] relative z-[1] before:absolute before:inset-0 before:bg-no-repeat before:bg-cover before:bg-center before:-z-[1] before:opacity-30">
@@ -71,10 +161,7 @@ export default function BookingPage() {
           <div className="flex gap-[30px] lg:gap-[20px] md:flex-col md:items-center">
             <div className="left">
               <div className="relative rounded-[8px] overflow-hidden">
-                <img
-                  src={event?.imageUrl}
-                  alt="event-details-img"
-                />
+                <img src={event?.imageUrl} alt="event-details-img" />
                 <span className="absolute top-[20px] left-[20px] bg-etBlue rounded-[6px] text-white px-[12px] py-[5px] inline-block font-normal text-[16px]">
                   Hall No: 59
                 </span>
@@ -144,10 +231,10 @@ export default function BookingPage() {
                       Call Us Now
                     </span>
                     <Link
-                      href="tel:+208-555-0112"
+                      href="tel:+65-1234-5678"
                       className="text-[18px] hover:text-etBlue"
                     >
-                      +208-555-0112
+                      +65-1234-5678
                     </Link>
                   </span>
                 </div>
@@ -347,10 +434,13 @@ export default function BookingPage() {
                     </div>
                   </div>
 
-                  <form className="space-y-[10px] mb-[30px]" onChange={(e) => {
-                    const target = e.target as HTMLInputElement;
-                    setPrice(Number(target.value));
-                  }}>
+                  <form
+                    className="space-y-[10px] mb-[30px]"
+                    onChange={(e) => {
+                      const target = e.target as HTMLInputElement;
+                      setPrice(Number(target.value));
+                    }}
+                  >
                     <div className="radio-container border border-[#d9d9d9] rounded-[6px] px-[16px] py-[7px]">
                       <label
                         htmlFor="schedule1"
@@ -378,7 +468,9 @@ export default function BookingPage() {
                         htmlFor="schedule2"
                         className="flex gap-[15px] relative font-normal text-[14px] text-[#232323]"
                       >
-                        <span>Advanced Smart Contracts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <span>
+                          Advanced Smart Contracts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
                         <span className="flex items-center">
                           <input
                             type="radio"
@@ -422,7 +514,7 @@ export default function BookingPage() {
                         type="button"
                         id="decreaseButton"
                         disabled={quantity <= 1}
-                        onClick={() => setQuantity(prev => prev - 1)}
+                        onClick={() => setQuantity((prev) => prev - 1)}
                         className="decrease font-extralight text-[35px] bg-etBlue/10 w-[28px] aspect-square rounded-full inline-flex items-center justify-center hover:bg-etBlue hover:text-white"
                       >
                         <span className="h-[28px] leading-[22px]">&minus;</span>
@@ -434,7 +526,7 @@ export default function BookingPage() {
                       <button
                         type="button"
                         id="increaseButton"
-                        onClick={() => setQuantity(prev => prev + 1)}
+                        onClick={() => setQuantity((prev) => prev + 1)}
                         className="increase font-extralight text-[35px] bg-etBlue/10 w-[28px] aspect-square rounded-full inline-flex items-center justify-center hover:bg-etBlue hover:text-white"
                       >
                         <span className="h-[28px] leading-[22px]">+</span>
@@ -442,14 +534,25 @@ export default function BookingPage() {
                     </div>
                   </div>
 
-                  <button className="bg-etBlue h-[50px] rounded-full px-[15px] flex items-center justify-center gap-x-[10px] w-full text-white text-[15px] hover:bg-[#000D83]">
+                  {waitTime > 0 && (
+                    <p className="text-xl">
+                      Your queue number: {Math.trunc(waitTime / 5) + 1}.
+                      Estimate wait time: {waitTime - (waitTime % 5) + 10}{" "}
+                      seconds
+                    </p>
+                  )}
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={waitTime > 0}
+                    className="bg-etBlue h-[50px] rounded-full px-[15px] flex items-center justify-center gap-x-[10px] w-full text-white text-[15px] hover:bg-[#000D83]"
+                  >
                     <span>
                       <img
                         src="/assets/img/ticket-icon.svg"
                         alt="ticket icon"
                       />
                     </span>
-                    <span>{price * quantity}.00 SGD-get Tickets Now</span>
+                    <span>{price * quantity}.00 SGD-Buy Now</span>
                   </button>
                 </div>
               </div>
