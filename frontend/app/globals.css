@@ -3011,6 +3011,9 @@ video {
 .bg-\[url\(\'\.\.\/assets\/img\/event-bg-big\.jpg\'\)\] {
   background-image: url('/assets/img/event-bg-big.jpg');
 }
+.bg-\[url\(\'\.\.\/assets\/img\/event-bg-big-3\.jpg\'\)\] {
+  background-image: url('/assets/img/event-bg-big-3.jpg');
+}
 
 .bg-\[url\(\'\.\.\/assets\/img\/pricing-bg\.jpg\'\)\] {
   background-image: url('/assets/img/pricing-bg.jpg');
