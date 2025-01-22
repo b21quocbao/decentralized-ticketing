@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const sql = neon(process.env.DATABASE_URL as string);
-  const data = await sql`SELECT * FROM events;`;
+  const data = await sql`SELECT * FROM public.events;`;
   return Response.json(data.map(event => {
     return {
       id: event.id,
