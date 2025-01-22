@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -80,8 +81,11 @@ export default function EventOrganizerPage() {
             <div className="swiper-wrapper">
               {events &&
                 events.map((event) => (
-                  <div className="swiper-slide group">
-                    <div className="et-event bg-[url('../assets/img/event-bg-big.jpg')] bg-cover bg-no-repeat bg-center relative z-[1] rounded-[20px] overflow-hidden before:content-normal before:absolute before:inset-0 before:bg-gradient-to-b before:from-transparent before:to-black/70 before:-z-[1]">
+                  <div className="swiper-slide group" key={event.id}>
+                    <div
+                      className={`et-event bg-cover bg-no-repeat bg-center relative z-[1] rounded-[20px] overflow-hidden before:content-normal before:absolute before:inset-0 before:bg-gradient-to-b before:from-transparent before:to-black/70 before:-z-[1]`}
+                      style={{ backgroundImage: `url('${event.imageUrl}')` }}
+                    >
                       <div className="txt h-full flex flex-col justify-between items-start gap-[265px] lg:gap-[215px] xxs:gap-[165px] p-[40px] lg:p-[20px] pb-[50px] md:pb-[80px] text-white">
                         <div>
                           <div className="bg-etBlue rounded-full px-[15px] py-[4px]">
@@ -102,7 +106,7 @@ export default function EventOrganizerPage() {
                                   fill="none"
                                   xmlns="http://www.w3.org/2000/svg"
                                 >
-                                  <g clip-path="url(#clip0_2043_1443)">
+                                  <g clipPath="url(#clip0_2043_1443)">
                                     <path
                                       d="M14.125 1.75H13.375V0.5H12.125V1.75H3.875V0.5H2.625V1.75H1.875C0.841125 1.75 0 2.59113 0 3.625V14.625C0 15.6589 0.841125 16.5 1.875 16.5H14.125C15.1589 16.5 16 15.6589 16 14.625V3.625C16 2.59113 15.1589 1.75 14.125 1.75ZM14.75 14.625C14.75 14.9696 14.4696 15.25 14.125 15.25H1.875C1.53038 15.25 1.25 14.9696 1.25 14.625V6.375H14.75V14.625ZM14.75 5.125H1.25V3.625C1.25 3.28038 1.53038 3 1.875 3H2.625V4.25H3.875V3H12.125V4.25H13.375V3H14.125C14.4696 3 14.75 3.28038 14.75 3.625V5.125Z"
                                       fill="var(--white)"
@@ -242,8 +246,10 @@ export default function EventOrganizerPage() {
                       key={event.id}
                     >
                       <div className="w-[270px] h-[226px] shadow-[0_4px_60px_rgba(18,96,254,0.12)] shrink-0 rounded-[20px] overflow-hidden">
-                        <img
-                          src="/assets/img/evenet-sched-1.jpg"
+                        <Image
+                          width={270}
+                          height={226}
+                          src={event.imageUrl}
                           alt="scehduled-event-cover"
                         />
                       </div>
@@ -391,7 +397,7 @@ export default function EventOrganizerPage() {
 
                         <div className="flex shrink-0 xxl:flex-col flex-wrap items-center xxl:items-start gap-x-[30px] gap-y-[16px]">
                           <Link
-                            href="/events/1/booking"
+                            href={`/events/${event.id}/booking`}
                             className="et-btn border border-etBlue text-etBlue inline-flex items-center justify-center gap-x-[13px] h-[45px] px-[15px] font-normal text-[17px] rounded-full hover:!bg-etBlue hover:!text-white"
                           >
                             Buy Tickets

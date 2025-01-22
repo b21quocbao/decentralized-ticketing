@@ -68,7 +68,7 @@ export default function BookingPage() {
             <div className="left">
               <div className="relative rounded-[8px] overflow-hidden">
                 <img
-                  src="/assets/img/event-details-img.jpg"
+                  src={event?.imageUrl}
                   alt="event-details-img"
                 />
                 <span className="absolute top-[20px] left-[20px] bg-etBlue rounded-[6px] text-white px-[12px] py-[5px] inline-block font-normal text-[16px]">
@@ -78,24 +78,11 @@ export default function BookingPage() {
 
               <div>
                 <h4 className="text-[30px] xs:text-[25px] xxs:text-[22px] font-medium text-etBlack mb-[11px] mt-[27px]">
-                  Indoor Concerts
+                  Description
                 </h4>
 
                 <p className="font-light text-[16px] text-etGray mb-[15px]">
-                  Join us for an unforgettable evening of music and
-                  entertainment at the Indoor Concerts event. Experience live
-                  performances by top artists in a state-of-the-art venue,
-                  designed to provide the best acoustics and atmosphere for
-                  music lovers.
-                </p>
-
-                <p className="font-light text-[16px] text-etGray">
-                  The event will feature a diverse lineup of genres, ensuring
-                  there's something for everyone to enjoy. From rock and pop to
-                  jazz and classical, our talented performers will captivate you
-                  with their artistry and passion. Don't miss out on this
-                  opportunity to witness incredible live music and create
-                  lasting memories.
+                  {event?.description}
                 </p>
 
                 <h4 className="text-[30px] xs:text-[25px] xxs:text-[22px] font-medium text-etBlack mb-[11px] mt-[19px]">
