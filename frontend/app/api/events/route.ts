@@ -1,5 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const sql = neon(process.env.DATABASE_URL as string);
   const data = await sql`SELECT * FROM events;`;

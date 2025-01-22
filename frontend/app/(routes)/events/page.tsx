@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+export const dynamic = "force-dynamic";
+
 export type Event = {
   id: string;
   name: string;
@@ -42,7 +44,7 @@ export default function EventOrganizerPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("/api/events");
+        const response = await fetch("/api/events", { cache: "no-store" });
         const data = await response.json();
         setEvents(data);
       } catch (error) {

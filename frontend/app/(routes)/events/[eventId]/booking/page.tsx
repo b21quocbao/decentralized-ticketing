@@ -4,6 +4,8 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Event } from "../../page";
 
+export const dynamic = 'force-dynamic';
+
 export default function BookingPage() {
   const { eventId } = useParams() as any;
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -18,7 +20,7 @@ export default function BookingPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch("/api/events/" + eventId);
+        const response = await fetch("/api/events/" + eventId, { cache: 'no-store' });
         const data = await response.json();
         setEvent(data);
       } catch (error) {
