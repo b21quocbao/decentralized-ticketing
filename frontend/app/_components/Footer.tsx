@@ -4,13 +4,37 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useState } from "react";
+import { Event } from "../(routes)/events/page";
+import Image from "next/image";
+
+const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "short" });
+  const year = date.getFullYear();
+  return `${day}, ${month} - ${year}`;
+};
 
 export default function Footer() {
-  const [updated, setUpdated] = useState(0);
   const pathname = usePathname();
 
+  const [events, setEvents] = useState<Event[]>([]);
+
   useEffect(() => {
-    console.log("dmm");
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("/api/events");
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
     const scriptId = "dmm-js";
 
     // Remove existing script if it exists
@@ -406,201 +430,108 @@ export default function Footer() {
                   Upcoming <span className="text-etBlue">Events</span>
                 </h5>
 
-                <div className="space-y-[30px]">
-                  <div className="flex items-center gap-x-[30px] xxs:gap-x-[15px]">
-                    <div className="rounded-[15px] overflow-hidden shrink-0">
-                      <img
-                        src="/assets/img/cta-bg-2.jpg"
-                        alt="Event Image"
-                        className="w-[80px] aspect-square"
-                      />
-                    </div>
+                {events.slice(0, 2).map((event) => (
+                  <div className="space-y-[30px]" key={event.id}>
+                    <div className="flex items-center gap-x-[30px] xxs:gap-x-[15px]">
+                      <div className="rounded-[15px] overflow-hidden shrink-0">
+                        <Image
+                          width={570}
+                          height={491}
+                          src={event.imageUrl}
+                          alt="Event Image"
+                          className="w-[80px] aspect-square"
+                        />
+                      </div>
 
-                    <div>
-                      <span className="date text-[16px] text-etGray flex items-center gap-[12px] mb-[8px]">
-                        <span className="icon">
-                          <svg
-                            width="16"
-                            height="17"
-                            viewBox="0 0 16 17"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g clipPath="url(#clip0_2043_1443)">
-                              <path
-                                d="M14.125 1.75H13.375V0.5H12.125V1.75H3.875V0.5H2.625V1.75H1.875C0.841125 1.75 0 2.59113 0 3.625V14.625C0 15.6589 0.841125 16.5 1.875 16.5H14.125C15.1589 16.5 16 15.6589 16 14.625V3.625C16 2.59113 15.1589 1.75 14.125 1.75ZM14.75 14.625C14.75 14.9696 14.4696 15.25 14.125 15.25H1.875C1.53038 15.25 1.25 14.9696 1.25 14.625V6.375H14.75V14.625ZM14.75 5.125H1.25V3.625C1.25 3.28038 1.53038 3 1.875 3H2.625V4.25H3.875V3H12.125V4.25H13.375V3H14.125C14.4696 3 14.75 3.28038 14.75 3.625V5.125Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M3.625 7.6875H2.375V8.9375H3.625V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M6.125 7.6875H4.875V8.9375H6.125V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M8.625 7.6875H7.375V8.9375H8.625V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M11.125 7.6875H9.875V8.9375H11.125V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M13.625 7.6875H12.375V8.9375H13.625V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M3.625 10.1875H2.375V11.4375H3.625V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M6.125 10.1875H4.875V11.4375H6.125V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M8.625 10.1875H7.375V11.4375H8.625V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M11.125 10.1875H9.875V11.4375H11.125V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M3.625 12.6875H2.375V13.9375H3.625V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M6.125 12.6875H4.875V13.9375H6.125V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M8.625 12.6875H7.375V13.9375H8.625V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M11.125 12.6875H9.875V13.9375H11.125V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M13.625 10.1875H12.375V11.4375H13.625V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                            </g>
-                          </svg>
+                      <div>
+                        <span className="date text-[16px] text-etGray flex items-center gap-[12px] mb-[8px]">
+                          <span className="icon">
+                            <svg
+                              width="16"
+                              height="17"
+                              viewBox="0 0 16 17"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <g clipPath="url(#clip0_2043_1443)">
+                                <path
+                                  d="M14.125 1.75H13.375V0.5H12.125V1.75H3.875V0.5H2.625V1.75H1.875C0.841125 1.75 0 2.59113 0 3.625V14.625C0 15.6589 0.841125 16.5 1.875 16.5H14.125C15.1589 16.5 16 15.6589 16 14.625V3.625C16 2.59113 15.1589 1.75 14.125 1.75ZM14.75 14.625C14.75 14.9696 14.4696 15.25 14.125 15.25H1.875C1.53038 15.25 1.25 14.9696 1.25 14.625V6.375H14.75V14.625ZM14.75 5.125H1.25V3.625C1.25 3.28038 1.53038 3 1.875 3H2.625V4.25H3.875V3H12.125V4.25H13.375V3H14.125C14.4696 3 14.75 3.28038 14.75 3.625V5.125Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M3.625 7.6875H2.375V8.9375H3.625V7.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M6.125 7.6875H4.875V8.9375H6.125V7.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M8.625 7.6875H7.375V8.9375H8.625V7.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M11.125 7.6875H9.875V8.9375H11.125V7.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M13.625 7.6875H12.375V8.9375H13.625V7.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M3.625 10.1875H2.375V11.4375H3.625V10.1875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M6.125 10.1875H4.875V11.4375H6.125V10.1875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M8.625 10.1875H7.375V11.4375H8.625V10.1875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M11.125 10.1875H9.875V11.4375H11.125V10.1875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M3.625 12.6875H2.375V13.9375H3.625V12.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M6.125 12.6875H4.875V13.9375H6.125V12.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M8.625 12.6875H7.375V13.9375H8.625V12.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M11.125 12.6875H9.875V13.9375H11.125V12.6875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                                <path
+                                  d="M13.625 10.1875H12.375V11.4375H13.625V10.1875Z"
+                                  fill="var(--et-blue)"
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                          <span>{formatDate(event.timeMs)}</span>
                         </span>
-                        <span>24, jan - 2024</span>
-                      </span>
 
-                      <h6 className="font-medium text-[20px] text-white">
-                        <Link
-                          href="news-details.html"
-                          className="hover:text-etBlue"
-                        >
-                          Web Developer Meetup
-                        </Link>
-                      </h6>
+                        <h6 className="font-medium text-[20px] text-white">
+                          <Link
+                            href={`/events/${event.id}/booking`}
+                            className="hover:text-etBlue"
+                          >
+                            {event.name}
+                          </Link>
+                        </h6>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-x-[30px] xxs:gap-x-[15px]">
-                    <div className="rounded-[15px] overflow-hidden shrink-0">
-                      <img
-                        src="/assets/img/evenet-sched-2.jpg"
-                        alt="Event Image"
-                        className="w-[80px] aspect-square"
-                      />
-                    </div>
-
-                    <div>
-                      <span className="date text-[16px] text-etGray flex items-center gap-[12px] mb-[8px]">
-                        <span className="icon">
-                          <svg
-                            width="16"
-                            height="17"
-                            viewBox="0 0 16 17"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g clipPath="url(#clip0_2043_1443)">
-                              <path
-                                d="M14.125 1.75H13.375V0.5H12.125V1.75H3.875V0.5H2.625V1.75H1.875C0.841125 1.75 0 2.59113 0 3.625V14.625C0 15.6589 0.841125 16.5 1.875 16.5H14.125C15.1589 16.5 16 15.6589 16 14.625V3.625C16 2.59113 15.1589 1.75 14.125 1.75ZM14.75 14.625C14.75 14.9696 14.4696 15.25 14.125 15.25H1.875C1.53038 15.25 1.25 14.9696 1.25 14.625V6.375H14.75V14.625ZM14.75 5.125H1.25V3.625C1.25 3.28038 1.53038 3 1.875 3H2.625V4.25H3.875V3H12.125V4.25H13.375V3H14.125C14.4696 3 14.75 3.28038 14.75 3.625V5.125Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M3.625 7.6875H2.375V8.9375H3.625V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M6.125 7.6875H4.875V8.9375H6.125V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M8.625 7.6875H7.375V8.9375H8.625V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M11.125 7.6875H9.875V8.9375H11.125V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M13.625 7.6875H12.375V8.9375H13.625V7.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M3.625 10.1875H2.375V11.4375H3.625V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M6.125 10.1875H4.875V11.4375H6.125V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M8.625 10.1875H7.375V11.4375H8.625V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M11.125 10.1875H9.875V11.4375H11.125V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M3.625 12.6875H2.375V13.9375H3.625V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M6.125 12.6875H4.875V13.9375H6.125V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M8.625 12.6875H7.375V13.9375H8.625V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M11.125 12.6875H9.875V13.9375H11.125V12.6875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                              <path
-                                d="M13.625 10.1875H12.375V11.4375H13.625V10.1875Z"
-                                fill="var(--et-blue)"
-                              ></path>
-                            </g>
-                          </svg>
-                        </span>
-                        <span>24, jan - 2024</span>
-                      </span>
-
-                      <h6 className="font-medium text-[20px] text-white">
-                        <Link
-                          href="news-details.html"
-                          className="hover:text-etBlue"
-                        >
-                          Web Developer Meetup
-                        </Link>
-                      </h6>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -612,15 +543,9 @@ export default function Footer() {
           </div>
         </div>
       </footer>
-      <Script
-        defer
-        src="/assets/vendor/swiper/swiper-bundle.min.js"
-      ></Script>
+      <Script defer src="/assets/vendor/swiper/swiper-bundle.min.js"></Script>
       <Script defer src="/assets/vendor/splide/splide.min.js"></Script>
-      <Script
-        defer
-        src="/assets/vendor/slim-select/slimselect.min.js"
-      ></Script>
+      <Script defer src="/assets/vendor/slim-select/slimselect.min.js"></Script>
       <Script defer src="/assets/vendor/fslightbox/fslightbox.js"></Script>
       <Script
         defer
