@@ -12,6 +12,8 @@ export default function BookingPage() {
   const [showBallotWarning, setShowBallotWarning] = useState(false);
   const seatPrice = 0.1; // Example price per seat in Ether
   const [event, setEvent] = useState<Event | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [price, setPrice] = useState(20);
 
   const selectSeat = (seat: string) => {
     setSelectedSeats((prev) => [...prev, seat]);
@@ -345,7 +347,10 @@ export default function BookingPage() {
                     </div>
                   </div>
 
-                  <form className="space-y-[10px] mb-[30px]">
+                  <form className="space-y-[10px] mb-[30px]" onChange={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    setPrice(Number(target.value));
+                  }}>
                     <div className="radio-container border border-[#d9d9d9] rounded-[6px] px-[16px] py-[7px]">
                       <label
                         htmlFor="schedule1"
@@ -357,7 +362,7 @@ export default function BookingPage() {
                             type="radio"
                             id="schedule1"
                             name="options"
-                            value="schedule1"
+                            value="20"
                             className="appearance-none invisible"
                             defaultChecked
                           />
@@ -379,7 +384,7 @@ export default function BookingPage() {
                             type="radio"
                             id="schedule2"
                             name="options"
-                            value="schedule2"
+                            value="30"
                             className="appearance-none invisible"
                           />
                           <span className="font-normal text-[14px] text-[#232323] before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
@@ -400,7 +405,7 @@ export default function BookingPage() {
                             type="radio"
                             id="schedule3"
                             name="options"
-                            value="schedule3"
+                            value="50"
                             className="appearance-none invisible"
                           />
                           <span className="font-normal text-[14px] text-[#232323] before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
@@ -416,17 +421,20 @@ export default function BookingPage() {
                       <button
                         type="button"
                         id="decreaseButton"
+                        disabled={quantity <= 1}
+                        onClick={() => setQuantity(prev => prev - 1)}
                         className="decrease font-extralight text-[35px] bg-etBlue/10 w-[28px] aspect-square rounded-full inline-flex items-center justify-center hover:bg-etBlue hover:text-white"
                       >
                         <span className="h-[28px] leading-[22px]">&minus;</span>
                       </button>
                       <span className="text-[16px] font-light">
-                        <span id="ticketNumber">1</span> Ticket
+                        <span id="ticketNumber">{quantity}</span> Ticket
                       </span>
 
                       <button
                         type="button"
                         id="increaseButton"
+                        onClick={() => setQuantity(prev => prev + 1)}
                         className="increase font-extralight text-[35px] bg-etBlue/10 w-[28px] aspect-square rounded-full inline-flex items-center justify-center hover:bg-etBlue hover:text-white"
                       >
                         <span className="h-[28px] leading-[22px]">+</span>
@@ -441,7 +449,7 @@ export default function BookingPage() {
                         alt="ticket icon"
                       />
                     </span>
-                    <span>15,00 €-get Tickets Now</span>
+                    <span>{price * quantity}.00 SGD-get Tickets Now</span>
                   </button>
                 </div>
               </div>
