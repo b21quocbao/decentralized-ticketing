@@ -1,139 +1,68 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./EventTicketNFT.sol";
 
 contract EventTicketing {
     struct Event {
-        uint256 id;
+        address owner;
         string name;
         string description;
-        uint256 date;
-        uint256 capacity;
-        uint256 ticketPrice;
-        address[] interestedUsers;
-        address[] allocatedUsers;
-        bool exists;
+        string imageUrl;
+        uint256 time;
+        uint256 duration;
     }
 
-    uint256 public eventCount;
+    uint256 public eventIdCounter = 1;
     mapping(uint256 => Event) public events;
-    mapping(address => mapping(uint256 => bool)) public userInterest;
-    mapping(address => mapping(uint256 => bool)) public userPayment;
 
-    event EventCreated(uint256 eventId, string name, uint256 date, uint256 capacity, uint256 ticketPrice);
-    event RegisteredInterest(uint256 eventId, address user);
-    event BallotAllocated(uint256 eventId, address[] allocatedUsers);
-    event PaymentMade(uint256 eventId, address user);
+    ERC20 public sgdtToken;
+    EventTicketNFT public ticketNFT;
+    uint256 ticketCounter = 1;
 
-    modifier eventExists(uint256 eventId) {
-        require(events[eventId].exists, "Event does not exist");
-        _;
+    constructor(address sgdtTokenAddress, address ticketNFTAddress) {
+        sgdtToken = ERC20(sgdtTokenAddress);
+        ticketNFT = EventTicketNFT(ticketNFTAddress);
     }
 
-    modifier hasNotRegistered(uint256 eventId) {
-        require(!userInterest[msg.sender][eventId], "Already registered interest");
-        _;
-    }
-
-    modifier hasNotPaid(uint256 eventId) {
-        require(!userPayment[msg.sender][eventId], "Payment already made");
-        _;
-    }
-
-    // Create an event
     function createEvent(
         string memory name,
         string memory description,
-        uint256 date,
-        uint256 capacity,
-        uint256 ticketPrice
+        string memory imageUrl,
+        uint256 time,
+        uint256 duration
     ) public {
-        require(date > block.timestamp, "Event date must be in the future");
-        require(capacity > 0, "Max tickets must be greater than 0");
-
-        address[] memory interestedUsers = new address[](0);
-        address[] memory allocatedUsers = new address[](0);
-
-        eventCount++;
-        events[eventCount] = Event({
-            id: eventCount,
+        uint256 eventId = eventIdCounter;
+        events[eventId] = Event({
+            owner: msg.sender,
             name: name,
             description: description,
-            date: date,
-            capacity: capacity,
-            ticketPrice: ticketPrice,
-            interestedUsers: interestedUsers,          
-            allocatedUsers: allocatedUsers,
-            exists: true
+            imageUrl: imageUrl,
+            time: time,
+            duration: duration
         });
-
-        emit EventCreated(eventCount, name, date, capacity, ticketPrice);
+        eventIdCounter++;
     }
 
-    // Register interest in an event
-    function registerInterest(uint256 eventId) public eventExists(eventId) hasNotRegistered(eventId) {
-        events[eventId].interestedUsers.push(msg.sender);
-        userInterest[msg.sender][eventId] = true;
-
-        emit RegisteredInterest(eventId, msg.sender);
-    }
-
-    // Conduct balloting for ticket allocation
-    function conductBalloting(uint256 eventId) public eventExists(eventId) {
-        Event storage currentEvent = events[eventId];
-        require(currentEvent.date > block.timestamp, "Event already started");
-        require(currentEvent.allocatedUsers.length == 0, "Balloting already conducted");
-
-        uint256 numTickets = currentEvent.capacity;
-        address[] storage interestedUsers = currentEvent.interestedUsers;
-
-        require(interestedUsers.length > 0, "No interested users for this event");
-
-        for (uint256 i = 0; i < interestedUsers.length && currentEvent.allocatedUsers.length < numTickets; i++) {
-            currentEvent.allocatedUsers.push(interestedUsers[i]);
-        }
-
-        emit BallotAllocated(eventId, currentEvent.allocatedUsers);
-    }
-
-    // Make a booking payment
-    function makePayment(uint256 eventId) public payable eventExists(eventId) hasNotPaid(eventId) {
-        Event storage currentEvent = events[eventId];
-        require(currentEvent.date > block.timestamp, "Event already started");
-        require(msg.value == currentEvent.ticketPrice, "Incorrect payment amount");
-
-        bool isAllocated = false;
-        for (uint256 i = 0; i < currentEvent.allocatedUsers.length; i++) {
-            if (currentEvent.allocatedUsers[i] == msg.sender) {
-                isAllocated = true;
-                break;
-            }
-        }
-        require(isAllocated, "User not allocated a ticket");
-
-        userPayment[msg.sender][eventId] = true;
-
-        emit PaymentMade(eventId, msg.sender);
-    }
-
-    // View event details
-    function getEvent(uint256 eventId) public view eventExists(eventId) returns (
-        string memory name,
-        string memory description,
-        uint256 date,
-        uint256 capacity,
-        uint256 ticketPrice,
-        address[] memory interestedUsers,
-        address[] memory allocatedUsers
-    ) {
-        Event storage currentEvent = events[eventId];
-        return (
-            currentEvent.name,
-            currentEvent.description,
-            currentEvent.date,
-            currentEvent.capacity,
-            currentEvent.ticketPrice,
-            currentEvent.interestedUsers,
-            currentEvent.allocatedUsers
+    function bookTicket(
+        uint256 eventId,
+        uint256 quantity,
+        uint256 price
+    ) public {
+        require(events[eventId].time > 0, "Event does not exist");
+        uint256 totalCost = quantity * price;
+        require(
+            sgdtToken.balanceOf(msg.sender) >= totalCost,
+            "Insufficient SGDT balance"
         );
+
+        // Transfer SGDT from user to event owner
+        sgdtToken.transferFrom(msg.sender, events[eventId].owner, totalCost);
+
+        for (uint256 i = 0; i < quantity; i++) {
+            ticketNFT.mint(msg.sender, ticketCounter);
+            ++ticketCounter;
+        }
     }
 }
