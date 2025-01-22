@@ -6,7 +6,13 @@ import type { ISuccessResult } from "@worldcoin/idkit";
 import { verify } from "../actions/verify";
 import Link from "next/link";
 
-export default function ConnectWorldIDButton() {
+export default function ConnectWorldIDButton({
+  children = "Login as Admin",
+  onClick
+}: Readonly<{
+  children?: React.ReactNode;
+  onClick?: () => void;
+}>) {
   const app_id = process.env.NEXT_PUBLIC_WLD_APP_ID as `app_${string}`;
   const action = process.env.NEXT_PUBLIC_WLD_ACTION;
 
@@ -49,8 +55,11 @@ export default function ConnectWorldIDButton() {
         handleVerify={handleProof}
         verification_level={VerificationLevel.Orb} // Change this to VerificationLevel.Device to accept Orb- and Device-verified users
       />
-      <Link href="#" onClick={() => setOpen(true)}>
-        Login as an Event Organizer
+      <Link href="#" onClick={() => {
+        if (onClick) onClick();
+        setOpen(true)
+      }}>
+        {children}
       </Link>
     </>
   );
