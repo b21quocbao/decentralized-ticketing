@@ -1,5 +1,6 @@
 "use client";
 import FormEvent from "@/app/_components/FormEvent";
+import { useUser } from "@/app/_context/UserContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -41,6 +42,7 @@ const formatTimeRange = (startTimestamp: number, durationMs: number) => {
 
 export default function EventOrganizerPage() {
   const [events, setEvents] = useState<Event[]>([]);
+  const { userRole } = useUser();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -242,7 +244,7 @@ export default function EventOrganizerPage() {
             <div className="et-schedules-tab-container">
               <div id="et-event-tab1" className="et-tab active">
                 <div className="all-scheduled-events space-y-[30px]">
-                  <FormEvent />
+                  {userRole == "admin" && <FormEvent />}
                   {events.map((event) => (
                     <div
                       className="et-schedule flex md:flex-wrap gap-x-[30px] gap-y-[20px] justify-between"
@@ -399,12 +401,14 @@ export default function EventOrganizerPage() {
                         </div>
 
                         <div className="flex shrink-0 xxl:flex-col flex-wrap items-center xxl:items-start gap-x-[30px] gap-y-[16px]">
-                          <Link
-                            href={`/events/${event.id}/booking`}
-                            className="et-btn border border-etBlue text-etBlue inline-flex items-center justify-center gap-x-[13px] h-[45px] px-[15px] font-normal text-[17px] rounded-full hover:!bg-etBlue hover:!text-white"
-                          >
-                            Buy Tickets
-                          </Link>
+                          {userRole == "user" && (
+                            <Link
+                              href={`/events/${event.id}/booking`}
+                              className="et-btn border border-etBlue text-etBlue inline-flex items-center justify-center gap-x-[13px] h-[45px] px-[15px] font-normal text-[17px] rounded-full hover:!bg-etBlue hover:!text-white"
+                            >
+                              Buy Tickets
+                            </Link>
+                          )}
                           <div className="flex items-center">
                             <div className="flex *:-ml-[20px]">
                               <img

@@ -4,6 +4,8 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Event } from "../../page";
 import { ethers, parseEther } from "ethers";
+import { useUser } from "@/app/_context/UserContext";
+import { Spinner } from "flowbite-react";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,8 @@ export default function BookingPage() {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(20);
   const [waitTime, setWaitTime] = useState(13);
+  const { setUpdateBalance } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
 
   const selectSeat = (seat: string) => {
     setSelectedSeats((prev) => [...prev, seat]);
@@ -68,6 +72,7 @@ export default function BookingPage() {
   const handleBuyNow = async () => {
     // @ts-ignore
     if (typeof window.ethereum !== "undefined") {
+      setIsLoading(true);
       let signer = null;
 
       let provider;
@@ -102,8 +107,12 @@ export default function BookingPage() {
         const tx = await contract.bookTicket(eventId, quantity, parseEther(price.toString()));
         await tx.wait();
         console.log("Transaction successful:", tx);
+        // @ts-ignore
+        setUpdateBalance((prev) => prev + 1); // Fake update balance
       } catch (error) {
         console.error("Transaction failed:", error);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       console.error("Ethereum object not found, install MetaMask.");
@@ -546,6 +555,7 @@ export default function BookingPage() {
                     disabled={waitTime > 0}
                     className="bg-etBlue h-[50px] rounded-full px-[15px] flex items-center justify-center gap-x-[10px] w-full text-white text-[15px] hover:bg-[#000D83]"
                   >
+                    {isLoading && <Spinner />}
                     <span>
                       <img
                         src="/assets/img/ticket-icon.svg"

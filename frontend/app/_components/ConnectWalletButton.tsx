@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal } from "flowbite-react";
+import { Modal } from "flowbite-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
