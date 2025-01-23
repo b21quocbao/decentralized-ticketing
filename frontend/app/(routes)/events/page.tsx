@@ -1,4 +1,5 @@
 "use client";
+import FormEvent from "@/app/_components/FormEvent";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -73,6 +74,7 @@ export default function EventOrganizerPage() {
           </ul>
         </div>
       </section>
+      
 
       <div className="container mx-auto max-w-[1200px] pt-[120px] lg:pt-[80px] md:pt-[60px] px-[12px] xl:max-w-full">
         <div className="relative">
@@ -90,6 +92,7 @@ export default function EventOrganizerPage() {
                             </span>
                           </div>
                         </div>
+                       
 
                         <div>
                           <div className="et-schedule-date-time border border-[rgba(217,217,217,0.89)] py-[4.5px] px-[15px] rounded-full inline-flex items-center justify-center xxs:flex-wrap gap-x-[24px] gap-y-[10px] mb-[20px] translate-y-[30px] opacity-0 group-[.swiper-slide-active]:translate-y-0 group-[.swiper-slide-active]:opacity-100 transition ease-linear duration-[500ms]">
@@ -217,6 +220,10 @@ export default function EventOrganizerPage() {
                   </div>
                 ))}
             </div>
+          </div>
+          <div> 
+        
+            <FormEvent />   {/* created the form event here */}
           </div>
 
           <div className="et-events-slider-nav flex gap-[16px] absolute -bottom-[20px] left-[50%] -translate-x-[50%] z-[1]">
