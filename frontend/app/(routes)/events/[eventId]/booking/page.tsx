@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Event } from "../../page";
 import { ethers, parseEther } from "ethers";
 import { useUser } from "@/app/_context/UserContext";
 import { Spinner } from "flowbite-react";
+import { toast, ToastContainer } from "react-toastify";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,7 @@ export default function BookingPage() {
   const [waitTime, setWaitTime] = useState(13);
   const { setUpdateBalance } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [showTickets, setShowTickets] = useState(false);
 
   const selectSeat = (seat: string) => {
     setSelectedSeats((prev) => [...prev, seat]);
@@ -87,11 +89,7 @@ export default function BookingPage() {
         signer = await provider.getSigner();
       }
 
-      const sgdtContract = new ethers.Contract(
-        SGDT_ADDRESS,
-        SGDT_ABI,
-        signer
-      );
+      const sgdtContract = new ethers.Contract(SGDT_ADDRESS, SGDT_ABI, signer);
 
       const contract = new ethers.Contract(
         CONTRACT_ADDRESS,
@@ -100,17 +98,29 @@ export default function BookingPage() {
       );
 
       try {
-        console.log(price * quantity, parseEther((price * quantity).toString()))
-        const approveTx = await sgdtContract.approve(CONTRACT_ADDRESS, parseEther((price * quantity).toString()));
+        console.log(
+          price * quantity,
+          parseEther((price * quantity).toString())
+        );
+        const approveTx = await sgdtContract.approve(
+          CONTRACT_ADDRESS,
+          parseEther((price * quantity).toString())
+        );
         await approveTx.wait();
         console.log("Approve transaction successful:", approveTx);
-        const tx = await contract.bookTicket(eventId, quantity, parseEther(price.toString()));
+        const tx = await contract.bookTicket(
+          eventId,
+          quantity,
+          parseEther(price.toString())
+        );
         await tx.wait();
         console.log("Transaction successful:", tx);
         // @ts-ignore
         setUpdateBalance((prev) => prev + 1); // Fake update balance
-      } catch (error) {
-        console.error("Transaction failed:", error);
+        showSuccessMsg();
+      } catch (error: any) {
+        console.error("Transaction failed:", error.message);
+        toast.error("Transaction was canceled by the user");
       } finally {
         setIsLoading(false);
       }
@@ -118,6 +128,19 @@ export default function BookingPage() {
       console.error("Ethereum object not found, install MetaMask.");
     }
   };
+
+  const showSuccessMsg = useCallback(() => {
+    toast.success(
+      <>
+        <span className="text-xl">
+          Ticket purchased successfully! View&nbsp;
+          <Link href="/tickets" className="underline text-blue-500">
+            here
+          </Link>
+        </span>
+      </>
+    );
+  }, []);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -145,6 +168,7 @@ export default function BookingPage() {
 
   return (
     <>
+      <ToastContainer />
       <section className="et-breadcrumb bg-[#000D83] pt-[210px] lg:pt-[190px] sm:pt-[160px] pb-[130px] lg:pb-[110px] sm:pb-[80px] relative z-[1] before:absolute before:inset-0 before:bg-no-repeat before:bg-cover before:bg-center before:-z-[1] before:opacity-30">
         <div className="container mx-auto max-w-[1200px] px-[12px] xl:max-w-full text-center text-white">
           <h1 className="et-breadcrumb-title font-medium text-[56px] md:text-[50px] xs:text-[45px]">
@@ -258,7 +282,7 @@ export default function BookingPage() {
                   <div className="rounded-[6px] overflow-hidden shrink-0">
                     <img
                       src="/assets/img/artist-4.jpg"
-                      alt="Blockchain Expert Image"
+                      alt="Artist Image"
                       className="w-[168px] aspect-square"
                     />
                   </div>
@@ -272,7 +296,7 @@ export default function BookingPage() {
                           </Link>
                         </h5>
                         <span className="inline-block text-etGray2 text-[16px]">
-                          Blockchain Developer
+                          Lead Vocalist
                         </span>
                       </div>
 
@@ -305,11 +329,10 @@ export default function BookingPage() {
                     </div>
 
                     <p className="font-light text-etGray2 pt-[20px] text-[16px]">
-                      Alice Johnson is a leading blockchain developer with
-                      extensive experience in building decentralized
-                      applications. She has contributed to several open-source
-                      blockchain projects and is a frequent speaker at industry
-                      conferences.
+                      Alice Johnson is the lead vocalist of the band, known for
+                      her powerful voice and dynamic stage presence. She has
+                      performed at numerous international music festivals and
+                      has a dedicated fan following.
                     </p>
                   </div>
                 </div>
@@ -318,7 +341,7 @@ export default function BookingPage() {
                   <div className="rounded-[6px] overflow-hidden shrink-0">
                     <img
                       src="/assets/img/artist-5.jpg"
-                      alt="Blockchain Expert Image"
+                      alt="Artist Image"
                       className="w-[168px] aspect-square"
                     />
                   </div>
@@ -332,7 +355,7 @@ export default function BookingPage() {
                           </Link>
                         </h5>
                         <span className="inline-block text-etGray2 text-[16px]">
-                          Cryptocurrency Analyst
+                          Guitarist
                         </span>
                       </div>
 
@@ -365,11 +388,10 @@ export default function BookingPage() {
                     </div>
 
                     <p className="font-light text-etGray2 pt-[20px] text-[16px]">
-                      Bob Smith is a cryptocurrency analyst with a deep
-                      understanding of market trends and blockchain technology.
-                      He provides insights and analysis on the latest
-                      developments in the crypto space and advises on investment
-                      strategies.
+                      Bob Smith is a talented guitarist known for his intricate
+                      solos and rhythmic prowess. He has been a part of the
+                      music scene for over a decade and has collaborated with
+                      various renowned artists.
                     </p>
                   </div>
                 </div>
@@ -455,18 +477,18 @@ export default function BookingPage() {
                         htmlFor="schedule1"
                         className="flex gap-[15px] relative font-normal text-[14px] text-[#232323]"
                       >
-                        <span>Blockchain Basics Workshop</span>
+                        <span className="w-64">Rock Concert</span>
                         <span className="flex items-center">
                           <input
                             type="radio"
                             id="schedule1"
                             name="options"
-                            value="20"
+                            value="80"
                             className="appearance-none invisible"
                             defaultChecked
                           />
                           <span className="before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
-                            20.00 SGD
+                            80.00 SGD
                           </span>
                         </span>
                       </label>
@@ -477,19 +499,17 @@ export default function BookingPage() {
                         htmlFor="schedule2"
                         className="flex gap-[15px] relative font-normal text-[14px] text-[#232323]"
                       >
-                        <span>
-                          Advanced Smart Contracts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        </span>
+                        <span className="w-64">Jazz Night</span>
                         <span className="flex items-center">
                           <input
                             type="radio"
                             id="schedule2"
                             name="options"
-                            value="30"
+                            value="100"
                             className="appearance-none invisible"
                           />
                           <span className="font-normal text-[14px] text-[#232323] before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
-                            30.00 SGD
+                            100.00 SGD
                           </span>
                         </span>
                       </label>
@@ -500,17 +520,17 @@ export default function BookingPage() {
                         htmlFor="schedule3"
                         className="flex gap-[15px] relative font-normal text-[14px] text-[#232323]"
                       >
-                        <span>Ethereum Development Bootcamp</span>
+                        <span className="w-64">Classical Music Evening</span>
                         <span className="flex items-center">
                           <input
                             type="radio"
                             id="schedule3"
                             name="options"
-                            value="50"
+                            value="120"
                             className="appearance-none invisible"
                           />
                           <span className="font-normal text-[14px] text-[#232323] before:content-normal before:absolute before:w-[16px] before:h-[16px] before:border before:border-etBlue before:rounded-full before:bg-white before:right-0 before:top-[50%] before:-translate-y-[50%] before:-z-[1] after:content-normal after:w-[8px] after:h-[8px] after:bg-etBlue after:rounded-full after:mr-[4px] after:opacity-0 after:absolute after:top-[50%] after:-translate-y-[50%] after:right-0 mr-[28px]">
-                            50.00 SGD
+                            120.00 SGD
                           </span>
                         </span>
                       </label>
