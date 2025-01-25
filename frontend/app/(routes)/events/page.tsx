@@ -61,7 +61,7 @@ export default function EventOrganizerPage() {
 
   return (
     <>
-      <ToastContainer  />
+      <ToastContainer />
       <section className="et-breadcrumb bg-[#000D83] pt-[210px] lg:pt-[190px] sm:pt-[160px] pb-[130px] lg:pb-[110px] sm:pb-[80px] relative z-[1] before:absolute before:inset-0 before:bg-no-repeat before:bg-cover before:bg-center before:-z-[1] before:opacity-30">
         <div className="container mx-auto max-w-[1200px] px-[12px] xl:max-w-full text-center text-white">
           <h1 className="et-breadcrumb-title font-medium text-[56px] md:text-[50px] xs:text-[45px]">
@@ -409,7 +409,11 @@ export default function EventOrganizerPage() {
                               const isAllowed = userRole == "user";
 
                               if (!isAllowed) {
-                                toast.error("Please connect your wallet to proceed");
+                                toast.error(
+                                  <span className="text-xl">
+                                    Please connect your wallet to proceed
+                                  </span>
+                                );
                                 e.preventDefault(); // Prevent navigation if the condition is not met
                               }
                             }}

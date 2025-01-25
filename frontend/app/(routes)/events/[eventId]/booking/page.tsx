@@ -120,7 +120,9 @@ export default function BookingPage() {
         showSuccessMsg();
       } catch (error: any) {
         console.error("Transaction failed:", error.message);
-        toast.error("Transaction was canceled by the user");
+        toast.error(
+          <span className="text-xl">Transaction was canceled by the user</span>
+        );
       } finally {
         setIsLoading(false);
       }
