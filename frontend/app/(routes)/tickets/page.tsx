@@ -226,9 +226,6 @@ export default function TicketPage() {
                       NFT #3
                     </Link>
                   </h5>
-                  <span className="text-etGray text-[16px]">
-                    Actress
-                  </span>
                 </div>
               </div>
 
