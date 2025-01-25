@@ -4,6 +4,7 @@ import { ethers, formatEther } from "ethers";
 import ConnectWalletButton from "../_components/ConnectWalletButton";
 import Link from "next/link";
 import ConnectWorldIDButton from "../_components/ConnectWorldIDButton";
+import { useUser } from "../_context/UserContext";
 
 const SGDT_ADDRESS = "0x12b408E193dC2b00510C0e36B64ffBd5A34F204F";
 const SGDT_ABI = [
@@ -12,9 +13,8 @@ const SGDT_ABI = [
 ];
 const Headbar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
   const [sgdtBalance, setSgdtBalance] = useState<string | null>(null);
+  const { userAddress, userRole, setUserAddress, setUserRole, updateBalance } = useUser();
 
   const checkLoginStatus = useCallback(() => {
     const address = localStorage.getItem("address");
@@ -50,10 +50,11 @@ const Headbar: React.FC = () => {
       setSgdtBalance(formatEther(balance));
     };
 
-    if (isLoggedIn) {
+    if (isLoggedIn && userRole == "user") {
       fetchBalance();
     }
-  }, [isLoggedIn, userAddress]);
+  }, [isLoggedIn, userAddress, userRole, updateBalance]);
+
   const handleLogout = () => {
     localStorage.removeItem("address");
     localStorage.removeItem("role");
@@ -136,7 +137,7 @@ const Headbar: React.FC = () => {
                     <p>
                       Logged in as {userRole}: {formatAddress(userAddress)}
                     </p>
-                    <p>SGDT Balance: {sgdtBalance}</p>
+                    {userRole == "user" && <p>SGDT Balance: {sgdtBalance}</p>}
                   </div>
                 )}
 

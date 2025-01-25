@@ -5,10 +5,12 @@ import Headbar from "./components/Headbar";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import Footer from "./_components/Footer";
+import { UserProvider } from "./_context/UserContext";
 
 export const metadata: Metadata = {
   title: "Decentralized Event Management System",
-  description: "Decentralized Event Management System is a decentralized event management system that uses blockchain technology to ensure transparency, security, and accountability.",
+  description:
+    "Decentralized Event Management System is a decentralized event management system that uses blockchain technology to ensure transparency, security, and accountability.",
 };
 
 export default function RootLayout({
@@ -30,11 +32,13 @@ export default function RootLayout({
           href="/assets/vendor/slim-select/slimselect.css"
         />
       </head>
-      <body>
-        <Headbar />
-        <main>{children}</main>
-        <Footer />
-      </body>
+      <UserProvider>
+        <body>
+          <Headbar />
+          <main>{children}</main>
+          <Footer />
+        </body>
+      </UserProvider>
     </html>
   );
 }

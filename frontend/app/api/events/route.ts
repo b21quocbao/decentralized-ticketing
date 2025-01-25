@@ -42,8 +42,7 @@ export async function POST(req: Request) {
     imageUrl,
   };
 
-  // @ts-ignore
-  await sql.transaction('INSERT INTO events (name, description, time_ms, duration_ms, image_url) VALUES ($1, $2, $3, $4, $5)', [
+  await sql('INSERT INTO events (name, description, time_ms, duration_ms, image_url) VALUES ($1, $2, $3, $4, $5)', [
     newEvent.name,
     newEvent.description,
     newEvent.timeMs,

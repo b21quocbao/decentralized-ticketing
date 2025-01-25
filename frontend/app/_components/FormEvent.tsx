@@ -1,177 +1,232 @@
+"use client";
+import { ethers } from "ethers";
+import { Modal, Spinner } from "flowbite-react";
+import { useState } from "react";
 
-"use client"
-import React, { useState } from "react";
+const CONTRACT_ADDRESS = "0x4d48aFf599E0fe92293F2a80811526fBD98A5c44";
+const CONTRACT_ABI = [
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "description",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "imageUrl",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "time",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "duration",
+        type: "uint256",
+      },
+    ],
+    name: "createEvent",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 
 function FormEvent() {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleButtonClick = () => {
     setPopupVisible(true);
   };
 
-  const handleFormSubmit = () => {
-    
+  const handleFormSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const name = e.target.name.value;
+    const description = e.target.description.value;
+    const imageUrl = e.target.imageUrl.value;
+    const time = new Date(e.target.time.value).getTime();
+    const duration = e.target.duration.value * 60 * 1000;
+
+    console.log({
+      name,
+      description,
+      imageUrl,
+      time,
+      duration,
+    })
+
+    // @ts-ignore
+    if (typeof window.ethereum !== "undefined") {
+      let signer = null;
+
+      let provider;
+
+      // @ts-ignore
+      if (window.ethereum == null) {
+        console.log("MetaMask not installed; using read-only defaults");
+        provider = ethers.getDefaultProvider();
+      } else {
+        // @ts-ignore
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+      }
+
+      const contract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        CONTRACT_ABI,
+        signer
+      );
+
+      try {
+        const tx = await contract.createEvent(
+          name,
+          description,
+          imageUrl,
+          time,
+          duration
+        );
+        await tx.wait();
+        console.log("Transaction successful:", tx);
+
+        await fetch("/api/events", {
+          method: "POST",
+          body: JSON.stringify({ name, description, imageUrl, timeMs: time, durationMs: duration }),
+        });
+      } catch (error) {
+        console.error("Transaction failed:", error);
+      }
+    }
+
     setPopupVisible(false);
+    setIsLoading(false);
   };
 
   return (
-    <div 
-    style={{
-      display: "flex",
-      justifyContent: "flex-end", // Aligns the button to the right
-      paddingTop: "30px",
+    <div className="flex justify-end pt-5">
+      <button
+        onClick={handleButtonClick}
+        className="et-btn bg-etBlue inline-flex items-center justify-center gap-x-[13px] h-[45px] px-[15px] text-white font-normal text-[17px] rounded-full hover:!bg-black hover:!text-white"
+      >
+        Create Event
+      </button>
 
-    }}
-  >
-    <button
-      style={{
-        padding: "10px 20px", // Adds padding inside the button
-        backgroundColor: "#3498db", // Optional: Adds styling for the button
-        color: "#fff",
-        border: "none",
-        borderRadius: "8px",
-        cursor: "pointer",
-      }}
-      onClick={handleButtonClick}
-    >
-      Create Event
-    </button>
-  
-      {isPopupVisible && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            padding: "10px",
-            backgroundColor: "#fff",
-            zIndex: 1000,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "stretch", // Make children expand horizontally
-            justifyContent: "center", // Center the form
-            width: "70%",
-            maxWidth: "300px", // Max width for responsive form
-            borderRadius: "12px", // Rounded corners
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Optional box shadow for depth
-          }}
-        >
-          <form onSubmit={handleFormSubmit} style={{ padding: "20px" }}>
-            <div style={{ paddingBottom: "16px" }}>
-              <label>
-                Event Name:
-                <input
-                  type="text"
-                  required
-                  style={{ marginLeft: "8px", padding: "8px", width: "100%" }}
-                />
+      <Modal
+        show={isPopupVisible}
+        // popup
+        dismissible
+        className="pt-[130px]"
+        size="3xl"
+        position="center"
+        onClose={() => setPopupVisible(false)}
+      >
+        <Modal.Header>
+          <p className="font-bold text-2xl">Create Event</p>
+        </Modal.Header>
+        <Modal.Body className="text-xl">
+          <form onSubmit={handleFormSubmit} className="px-5">
+            <div className="pb-5">
+              <label
+                htmlFor="et-event-name"
+                className="font-lato font-semibold text-etBlack block mb-[12px]"
+              >
+                Event Name*
               </label>
+              <input
+                type="text"
+                name="name"
+                id="et-event-name"
+                placeholder="Event Name"
+                className="text-xl border border-[#ECECEC] h-[55px] px-[20px] xs:px-[15px] rounded-[4px] w-full focus:outline-none"
+              />
             </div>
-  
-            <div style={{ paddingBottom: "16px" }}>
-              <label>
-                Description:
-                <input
-                  type="text"
-                  required
-                  style={{ marginLeft: "8px", padding: "8px", width: "100%" }}
-                />
+            <div className="pb-5">
+              <label
+                htmlFor="et-description"
+                className="font-lato font-semibold text-etBlack block mb-[12px]"
+              >
+                Description*
               </label>
+              <input
+                type="text"
+                name="description"
+                id="et-description"
+                placeholder="Description"
+                className="text-xl border border-[#ECECEC] h-[55px] px-[20px] xs:px-[15px] rounded-[4px] w-full focus:outline-none"
+              />
             </div>
-  
-            <div style={{ paddingBottom: "16px" }}>
-              <label>
-                Duration (in minutes):
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  required
-                  placeholder="Enter duration in minutes"
-                  style={{ marginLeft: "8px", padding: "8px", width: "100%" }}
-                />
+
+            <div className="pb-5">
+              <label
+                htmlFor="et-start-time"
+                className="font-lato font-semibold text-etBlack block mb-[12px]"
+              >
+                Start Time*
               </label>
+              <input
+                type="datetime-local"
+                name="time"
+                id="et-start-time"
+                className="text-xl border border-[#ECECEC] h-[55px] px-[20px] xs:px-[15px] rounded-[4px] w-full focus:outline-none"
+              />
             </div>
-  
-            <div style={{ paddingBottom: "16px" }}>
-              <label>
-                Start Time:
-                <input
-                  type="time"
-                  required
-                  style={{ marginLeft: "8px", padding: "8px", width: "100%" }}
-                />
+
+            <div className="pb-5">
+              <label
+                htmlFor="et-duration"
+                className="font-lato font-semibold text-etBlack block mb-[12px]"
+              >
+                Duration (in minutes)*:
               </label>
+              <input
+                type="number"
+                name="duration"
+                id="et-duration"
+                min="1"
+                step="1"
+                placeholder="Enter duration in minutes"
+                className="text-xl border border-[#ECECEC] h-[55px] px-[20px] xs:px-[15px] rounded-[4px] w-full focus:outline-none"
+              />
             </div>
-  
-            <div style={{ paddingBottom: "16px" }}>
-              <label>
-                Image URL:
-                <input
-                  type="url"
-                  required
-                  placeholder="Enter a valid URL"
-                  style={{ marginLeft: "8px", padding: "8px", width: "100%" }}
-                />
+
+            <div className="pb-5">
+              <label
+                htmlFor="et-image-url"
+                className="font-lato font-semibold text-etBlack block mb-[12px]"
+              >
+                Image URL*
               </label>
+              <input
+                type="text"
+                name="imageUrl"
+                id="et-image-url"
+                placeholder="Enter a valid URL"
+                className="text-xl border border-[#ECECEC] h-[55px] px-[20px] xs:px-[15px] rounded-[4px] w-full focus:outline-none"
+              />
             </div>
-  
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+
+            <div className="flex justify-around pt-3">
               <button
                 type="submit"
-                style={{
-                  backgroundColor: "#3498db",
-                  color: "#fff",
-                  borderRadius: "8px",
-                  padding: "10px 20px",
-                  border: "none",
-                  cursor: "pointer",
-                  transition: "background-color 0.3s ease",
-                  width: "48%",
-                  marginRight: "4%",
-                }}
+                className="et-btn bg-etBlue inline-flex items-center justify-center gap-x-[13px] h-[45px] px-[15px] text-white font-normal text-[15px] px-10 py-7 rounded-3xl hover:!bg-black hover:!text-white"
               >
+                {isLoading && <Spinner />}
                 Submit
-              </button>
-  
-              <button
-                type="button"
-                onClick={() => setPopupVisible(false)}
-                style={{
-                  backgroundColor: "#e74c3c",
-                  color: "#fff",
-                  borderRadius: "8px",
-                  padding: "10px 20px",
-                  border: "none",
-                  cursor: "pointer",
-                  transition: "background-color 0.3s ease",
-                  width: "48%",
-                }}
-              >
-                Cancel
               </button>
             </div>
           </form>
-        </div>
-      )}
-  
-      {/* Optional overlay for aesthetics */}
-      {isPopupVisible && (
-        <div
-          onClick={() => setPopupVisible(false)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 999,
-          }}
-        ></div>
-      )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
-}  
-export default FormEvent
+}
+export default FormEvent;
