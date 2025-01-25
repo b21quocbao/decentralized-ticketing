@@ -39,7 +39,7 @@ export default function TicketPage() {
               <div className="et-member group">
                 <div className="et-member__img rounded-[16px] overflow-hidden">
                   <img
-                    src="/assets/img/new3.jpg"
+                    src="/assets/img/new1.jpg"
                     alt="Elephant Image"
                     className="w-full duration-[400ms] group-hover:scale-110"
                   />
@@ -93,17 +93,17 @@ export default function TicketPage() {
                       href="/team-member-details"
                       className="hover:text-etBlue"
                     >
-                      MIHAI
+                      NFT #1
                     </Link>
                   </h5>
-                  <span className="text-etGray text-[16px]">Product Owner</span>
+                  <span className="text-etGray text-[16px]"></span>
                 </div>
               </div>
 
               <div className="et-member group">
                 <div className="et-member__img rounded-[16px] overflow-hidden">
                   <img
-                    src="/assets/img/new5.jpg"
+                    src="/assets/img/new1.jpg"
                     alt="Team Member Image"
                     className="w-full duration-[400ms] group-hover:scale-110"
                   />
@@ -157,11 +157,11 @@ export default function TicketPage() {
                       href="/team-member-details"
                       className="hover:text-etBlue"
                     >
-                      MARIA
+                      NFT #2
                     </Link>
                   </h5>
                   <span className="text-etGray text-[16px]">
-                    Model
+                    
                   </span>
                 </div>
               </div>
@@ -169,7 +169,7 @@ export default function TicketPage() {
               <div className="et-member group">
                 <div className="et-member__img rounded-[16px] overflow-hidden">
                   <img
-                    src="/assets/img/new4.jpg"
+                    src="/assets/img/new1.jpg"
                     alt="Team Member Image"
                     className="w-full duration-[400ms] group-hover:scale-110"
                   />
@@ -223,7 +223,7 @@ export default function TicketPage() {
                       href="/team-member-details"
                       className="hover:text-etBlue"
                     >
-                      EMMA
+                      NFT #3
                     </Link>
                   </h5>
                   <span className="text-etGray text-[16px]">
@@ -237,7 +237,7 @@ export default function TicketPage() {
               <div className="et-member group">
                 <div className="et-member__img rounded-[16px] overflow-hidden">
                   <img
-                    src="/assets/img/new2.jpg"
+                    src="/assets/img/new1.jpg"
                     alt="Team Member Image"
                     className="w-full duration-[400ms] group-hover:scale-110"
                   />
@@ -291,11 +291,11 @@ export default function TicketPage() {
                       href="/team-member-details"
                       className="hover:text-etBlue"
                     >
-                     CHARLOTTE
+                     NFT #4
                     </Link>
                   </h5>
                   <span className="text-etGray text-[16px]">
-                    Psychologist
+                  
                   </span>
                 </div>
               </div>
